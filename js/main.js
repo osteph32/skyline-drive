@@ -12,7 +12,11 @@ const config = {
 
     /* No arcade physics. I decided to do all the movement manually */
 
-    scene: [MenuScene, DayScene, NightScene],
+    scene: [
+        MenuScene, 
+        /* DayScene, 
+        NightScene */
+    ],
 };
 
 const game = new Phaser.Game(config);
