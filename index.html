@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Skyline Drive</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+
+    /* Phaser 3 from CDN */
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.60.0/phaser.min.js"></script>
+
+    /* Game files */
+    <script src="js/constants.js"></script>
+    <script src="js/backgrounds/DayBackground.js"></script>
+    <script src="js/backgrounds/NightBackground.js"></script>
+    <script src="js/objects/Road.js"></script>
+    <script src="js/objects/PlayerCar.js"></script>
+    <script src="js/objects/TrafficCar.js"></script>
+    <script src="js/scenes/MenuScene.js"></script>
+    <script src="js/scenes/DayScene.js"></script>
+    <script src="js/scenes/NightScene.js"></script>
+    <script src="js/main.js"></script>
+
+</body>
+</html>
