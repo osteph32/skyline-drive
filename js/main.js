@@ -14,8 +14,8 @@ const config = {
 
     scene: [
         MenuScene, 
-        /* DayScene, 
-        NightScene */
+        DayScene, 
+        NightScene,
     ],
 };
 
