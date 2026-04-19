@@ -11,8 +11,8 @@ class TrafficCar {
     constructor(scene, road) {
         this.scene = scene;
         this.road = road;
-        this.car = [];
-        this.gfx = scene.add.graphics().setDepth(4);
+		this.gfx = scene.add.graphics().setDepth(4);
+        this.carList = [];
 
 
         /* NPC Car Colors */
@@ -29,39 +29,44 @@ class TrafficCar {
 
     /* Spawn a New Car */
     spawn() {
-		console.log('spawn called, cars before:', this.cars.length);
         const isOncoming = Math.random() < 0.45;
         const lane = isOncoming
             ? Phaser.Math.Between(0, 1) /* Left 2 Lanes */
             : Phaser.Math.Between(2, 3); /* Right 2 Lanes */
 
-        const palette = Phaser.Utils.Array.GetRandom(this.palettes);
+        const palette = this.palettes[
+			Phaser.Math.Between(0, this.palettes.length - 1)
+		];
+
         const speed = isOncoming
-            ? Phaser.Math.Between(C.TRAFFIC_MIN_SPEED, C.TRAFFIC_MAX_SPEED) * -1
-            : Phaser.Math.Between(C.TRAFFIC_MIN_SPEED * 0.4, C.TRAFFIC_MAX_SPEED * 0.5);
+			? Phaser.Math.FloatBetween(C.TRAFFIC_MIN_SPEED, C.TRAFFIC_MAX_SPEED) * -1
+			: Phaser.Math.FloatBetween(C.TRAFFIC_MIN_SPEED * 0.4, C.TRAFFIC_MAX_SPEED * 0.5);
 
         const startT = isOncoming ? 0.05 : 1.05;
 
-        this.car.push({
+        const entry = {
             lane,
             t: startT,
             speed: speed,
             isOncoming,
             palette,
-            hit: false
-        });
-		console.log('cars after spawn:', this.cars.length, this.cars);
+            hit: false,
+			screenX:    0,
+			screenY:    0,
+			screenW:    0,
+			screenH:    0,
+        };
+		
+		this.carList.push(entry);
     }
 
 
     /* Call Every Frame */
     update(playerScrollSpeed, playerX, playerY) {
-		if (!Array.isArray(this.cars)) this.cars = [];
-		console.log('update: car count:', this.cars.length);
 		this.gfx.clear();
 
-		for (let i = this.cars.length - 1; i >= 0; i--) {
-			const c = this.cars[i];
+		for (let i = this.carList.length - 1; i >= 0; i--) {
+			const c = this.carList[i];
 
 			if (c.isOncoming) {
 				c.t += 0.012 + playerScrollSpeed * 0.001;
@@ -69,12 +74,14 @@ class TrafficCar {
 				c.t += (c.speed - playerScrollSpeed) * 0.001;
 			}
 
-			if (c.t > 1.3 || c.t < -0.05) {
-				this.cars.splice(i, 1);
+			if (c.t > 1.35 || c.t < -0.1) {
+				this.carList.splice(i, 1);
 				continue;
 			}
 
-			this._drawCar(c);
+			if (c.t > 0 && c.t <= 1.0) {
+				this._drawCar(c);
+			}
 		}
 
 	return this._checkCollision(playerX, playerY);
@@ -82,87 +89,70 @@ class TrafficCar {
 
 
     /* Draw One Traffic Car */
-    _drawCar(car) {
-        const gfx = this.gfx;
-        const t = Phaser.Math.Clamp(car.t, 0, 1);
+    _drawCar(c) {
+		const gfx   = this.gfx;
+		const t     = Phaser.Math.Clamp(c.t, 0, 1);
+		const scale = Phaser.Math.Linear(0.15, 1.0, t);
+		const P     = C.PX * scale;
+		const col   = c.palette;
 
-        const screenY = this.road._perspY(t);
-        const laneW = C.ROAD_BOTTOM_W / C.ROAD_LANES;
-        const laneX = (C.WIDTH / 2 - C.ROAD_BOTTOM_W / 2) + (car.lane + 0.5) * laneW;
+		const laneW = C.ROAD_BOTTOM_W / C.ROAD_LANES;
+		const laneX = (C.WIDTH / 2 - C.ROAD_BOTTOM_W / 2)
+		            + (c.lane + 0.5) * laneW;
 
-        const scale = Phaser.Math.Linear(0.15, 1.0, t);
-        const P = C.PX * scale;
-        const col = car.palette;
+		/* Perspective shift — lanes converge at center horizon */
+		const perspX = Phaser.Math.Linear(C.WIDTH / 2, laneX, t);
+		const screenY = this.road._perspY(t);
 
-        const ox = laneX - 12 * P;
-        const oy = screenY - 10 * P;
+		const ox = perspX - 12 * P;
+		const oy = screenY - 10 * P;
 
-        const px = (c, r, w, h, color, alpha = 1) => {
-            gfx.fillStyle(color, alpha);
-			gfx.fillRect(ox + c * P, oy + r * P, w * P, h * P);
+		const px = (col, row, w, h, color, alpha = 1) => {
+			gfx.fillStyle(color, alpha);
+			gfx.fillRect(ox + col * P, oy + row * P, w * P, h * P);
 		};
 
-        
-        if (car.isOncoming) {
-
-            /* Oncoming Car Front View */
-			/* Hood */
-			px(2, 5, 20, 4,  ol.body);
+		if (c.isOncoming) {
+			
+			/* Front view */
+			px(2, 5, 20, 4, col.body);
 			px(3, 5, 18, 2, col.light, 0.4);
-
-			/* Windshield */
 			px(4, 2, 16, 4, C.CAR.WINDOW);
-			px(5, 2, 5, 1, C.CAR.WINDOW_GLARE, 0.35);
-
-			/* Roof */
 			px(5, 0, 14, 3, col.dark);
-
+			
 			/* Headlights */
-			px(2,  5, 4, 3, 0xffffcc);
+			px(2, 5, 4, 3, 0xffffcc);
 			px(18, 5, 4, 3, 0xffffcc);
-
-			/* Headlight Glow */
-			gfx.fillStyle(0xffffaa, 0.18);
-			gfx.fillEllipse(ox + 4 * P, oy + 6 * P, 14 * P, 10 * P);
+			gfx.fillStyle(0xffffaa, 0.15);
+			gfx.fillEllipse(ox + 4 * P,  oy + 6 * P, 14 * P, 10 * P);
 			gfx.fillEllipse(ox + 20 * P, oy + 6 * P, 14 * P, 10 * P);
-
-			/* Grille */
-			px(7, 8, 10, 2, col.dark);
-			px(8, 8, 8, 1, 0x333333);
-
+			
 			/* Bumper */
+			px(7, 8, 10, 2, col.dark);
 			px(2, 9, 20, 2, col.dark);
-
+			
 			/* Wheels */
 			px(0, 7, 4, 4, C.CAR.WHEEL);
 			px(20, 7, 4, 4, C.CAR.WHEEL);
 			px(1, 8, 2, 2, C.CAR.WHEEL_RIM);
 			px(21, 8, 2, 2, C.CAR.WHEEL_RIM);
-
+		
 		} else {
-
-            /* Same Direction Car Rear View */
-			/* Roof */
+			
+			/* Rear View */
 			px(5, 0, 14, 3, col.dark);
-
-			/* Rear Window */
 			px(5, 2, 14, 3, C.CAR.WINDOW);
-			px(6, 2, 4, 1, C.CAR.WINDOW_GLARE, 0.3);
-
-			/* Upper Body */
 			px(3, 5, 18, 3, col.body);
 			px(4, 5, 16, 1, col.light, 0.35);
-
-			/* Trunk */
 			px(3, 7, 18, 2, col.body);
-
+			
 			/* Tail Lights */
 			px(2, 8, 4, 3, 0xff2200);
 			px(18, 8, 4, 3, 0xff2200);
-
+			
 			/* Bumper */
 			px(3, 11, 18, 2, col.dark);
-
+			
 			/* Wheels */
 			px(0, 8, 4, 4, C.CAR.WHEEL);
 			px(20, 8, 4, 4, C.CAR.WHEEL);
@@ -170,48 +160,45 @@ class TrafficCar {
 			px(21, 9, 2, 2, C.CAR.WHEEL_RIM);
 		}
 
-		/* Screen Bounds for Collision */
-		car.screenX = ox;
-		car.screenY = oy;
-		car.screenW = 24 * P;
-		car.screenH = 14 * P;
+		/* Sscreen Bounds for Collision */
+		c.screenX = ox;
+		c.screenY = oy;
+		c.screenW = 24 * P;
+		c.screenH = 14 * P;
 	}
 
 	/* Collision Detection */
 	_checkCollision(playerX, playerY) {
-	if (!Array.isArray(this.cars) || this.cars.length === 0) return false;
+		if (this.carList.length === 0) return false;
 
-	const pW = 28 * C.PX;
-	const pH = 16 * C.PX;
-	const pL = playerX - pW / 2;
-	const pR = playerX + pW / 2;
-	const pT = playerY - pH;
-	const pB = playerY + pH * 0.5;
+		const pW = 28 * C.PX;
+		const pH = 16 * C.PX;
+		const pL = playerX - pW / 2;
+		const pR = playerX + pW / 2;
+		const pT = playerY - pH;
+		const pB = playerY + pH * 0.5;
+		const shrink = C.PX * 3;
 
-	const shrink = C.PX * 3;
+		for (const c of this.carList) {
+			if (c.hit || c.screenW === 0 || c.t < 0.75) continue;
 
-	for (const car of this.cars) {
-		if (!car.screenW) continue;
-		if (car.hit)      continue;
-		if (car.t < 0.75) continue;
+			const cL = c.screenX + shrink;
+			const cR = c.screenX + c.screenW - shrink;
+			const cT = c.screenY + shrink;
+			const cB = c.screenY + c.screenH - shrink;
 
-		const cL = car.screenX + shrink;
-		const cR = car.screenX + car.screenW - shrink;
-		const cT = car.screenY + shrink;
-		const cB = car.screenY + car.screenH - shrink;
-
-		if (pL < cR && pR > cL && pT < cB && pB > cT) {
-			car.hit = true;
-			return true;
+			if (pL < cR && pR > cL && pT < cB && pB > cT) {
+				c.hit = true;
+				return true;
+			}
 		}
-	}
 
-	return false;
-}
+		return false;
+	}
 
 	/* Clear All Cars */
 	reset() {
-		this.cars = [];
+		this.carList = [];
 		this.gfx.clear();
 	}
 }

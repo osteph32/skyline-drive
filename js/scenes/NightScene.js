@@ -26,6 +26,10 @@ class NightScene extends Phaser.Scene {
 		this.player = new PlayerCar(this);
 		this.traffic = new TrafficCar(this, this.road);
 
+		this._buildHUD();
+		this._buildBackButton();
+
+		/* Initial Traffic Spawn */
 		this.time.delayedCall(500, () => this.traffic.spawn());
 		this.time.delayedCall(1000, () => this.traffic.spawn());
 		this.time.delayedCall(1500, () => this.traffic.spawn());
