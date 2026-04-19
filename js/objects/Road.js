@@ -36,7 +36,6 @@ class Road {
     _drawRoadSurface() {
         const gfx = this.gfx;
 
-        /* Alternate dark/light strips for depth illusion */
 		for (let i = 0; i < this.segments; i++) {
 			const t1 = i / this.segments;
 			const t2 = (i + 1) / this.segments;
@@ -76,12 +75,11 @@ class Road {
             const t1 = i / dashes;
             const t2 = (i + 0.4) / dashes;
 
-            /* Animate scroll */
 			const scrollT = (this.offset / 80) / dashes;
 			const st1 = (t1 + scrollT) % 1;
 			const st2 = (t2 + scrollT) % 1;
 
-            if (st1 > st2) continue; /* Skip if dash is off-screen */
+            if (st1 > st2) continue;
 
             const y1 = this._perspY(st1);
             const y2 = this._perspY(st2);
@@ -168,22 +166,19 @@ class Road {
 
 			/* Right Edge */
 			gfx.fillPoints([
-				{ x: rx1,       y: y1 },
+				{ x: rx1, y: y1 },
 				{ x: rx1 + eW1, y: y1 },
 				{ x: rx2 + eW2, y: y2 },
-				{ x: rx2,       y: y2 },
+				{ x: rx2, y: y2 },
 			], true);
 		}
 	}
 
     /* Perspective Projection Helpers */
-
-    /* t = 0 is horizon, t = 1 is bottom of screen */
 	_perspY(t) {
 		return C.HORIZON_Y + (C.HEIGHT - C.HORIZON_Y) * t;
 	}
 
-	/* Half road width at depth t */
 	_perspHalfW(t) {
 		const topHalf    = C.ROAD_TOP_W / 2;
 		const bottomHalf = C.ROAD_BOTTOM_W / 2;
@@ -209,8 +204,7 @@ class Road {
 	}
 
 
-    /* ─── LANE X POSITIONS FOR OBJECTS ──── */
-	/* Returns screen X for a given lane 0-3 at the bottom of the screen */
+    /* Lane X Positions */
 	getLaneX(lane) {
 		const laneW = C.ROAD_BOTTOM_W / C.ROAD_LANES;
 		return (C.WIDTH / 2 - C.ROAD_BOTTOM_W / 2) + (lane + 0.5) * laneW;

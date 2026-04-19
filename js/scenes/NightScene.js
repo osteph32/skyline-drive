@@ -26,21 +26,17 @@ class NightScene extends Phaser.Scene {
 		this.player = new PlayerCar(this);
 		this.traffic = new TrafficCar(this, this.road);
 
-		/* Traffic Spawn Timer */
+		this.time.delayedCall(500, () => this.traffic.spawn());
+		this.time.delayedCall(1000, () => this.traffic.spawn());
+		this.time.delayedCall(1500, () => this.traffic.spawn());
+
+		/* Repeating spawn timer */
 		this.spawnTimer = this.time.addEvent({
 			delay: C.TRAFFIC_SPAWN_INTERVAL,
-			callback: () => { if (this.traffic) this._spawnTraffic(); },
+			callback: this._spawnTraffic,
 			callbackScope: this,
 			loop: true,
 		});
-
-		this.time.delayedCall(200,  () => { if (this.traffic) this.traffic.spawn(); });
-		this.time.delayedCall(600,  () => { if (this.traffic) this.traffic.spawn(); });
-		this.time.delayedCall(1000, () => { if (this.traffic) this.traffic.spawn(); });
-		this.time.delayedCall(1400, () => { if (this.traffic) this.traffic.spawn(); });
-
-		this._buildHUD();
-		this._buildBackButton();
 	}
 
 	/* Spawn Traffic */

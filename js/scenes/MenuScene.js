@@ -139,33 +139,33 @@ class MenuScene extends Phaser.Scene {
         };
 
         /* Body */
-        px(2,  4,  26, 5,  C.CAR.BODY);
-		px(4,  2,  22, 4,  C.CAR.BODY);
-		px(6,  0,  18, 3,  C.CAR.BODY_LIGHT);
+        px(2, 4, 26, 5, C.CAR.BODY);
+		px(4, 2, 22, 4, C.CAR.BODY);
+		px(6, 0, 18, 3, C.CAR.BODY_LIGHT);
 
 		/* Roof */
-		px(8,  -3, 14, 4,  C.CAR.BODY_DARK);
+		px(8, -3, 14, 4, C.CAR.BODY_DARK);
 
 		/* Window */
-		px(9,  -2, 12, 3,  C.CAR.WINDOW);
-		px(10, -1, 4,  1,  C.CAR.WINDOW_GLARE, 0.5);
+		px(9, -2, 12, 3, C.CAR.WINDOW);
+		px(10, -1, 4, 1, C.CAR.WINDOW_GLARE, 0.5);
 
 		/* Bumper */
-		px(3,  9,  24, 2,  C.CAR.BUMPER);
+		px(3, 9, 24, 2, C.CAR.BUMPER);
 
 		/* Brake lights */
-		px(2,  5,  4,  3,  C.CAR.BRAKE_LIGHT);
-		px(24, 5,  4,  3,  C.CAR.BRAKE_LIGHT);
+		px(2, 5, 4, 3, C.CAR.BRAKE_LIGHT);
+		px(24, 5, 4, 3, C.CAR.BRAKE_LIGHT);
 
         /* Wheels */
-		px(1,  8,  6,  4,  C.CAR.WHEEL);
-		px(23, 8,  6,  4,  C.CAR.WHEEL);
-		px(2,  9,  4,  2,  C.CAR.WHEEL_RIM);
-		px(24, 9,  4,  2,  C.CAR.WHEEL_RIM);
+		px(1, 8, 6, 4, C.CAR.WHEEL);
+		px(23, 8, 6, 4, C.CAR.WHEEL);
+		px(2, 9, 4, 2, C.CAR.WHEEL_RIM);
+		px(24, 9, 4, 2, C.CAR.WHEEL_RIM);
 
 		/* Licence plate */
-		px(11, 10, 8,  2,  C.CAR.PLATE);
-		px(12, 10, 6,  2,  C.CAR.PLATE_TEXT, 0.4);
+		px(11, 10, 8, 2, C.CAR.PLATE);
+		px(12, 10, 6, 2, C.CAR.PLATE_TEXT, 0.4);
 
 		/* Neon underglow for menu flair */
 		gfx.fillStyle(C.NIGHT.NEON_CYAN, 0.18);
