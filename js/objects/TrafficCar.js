@@ -69,9 +69,9 @@ class TrafficCar {
 			const c = this.carList[i];
 
 			if (c.isOncoming) {
-				c.t += 0.012 + playerScrollSpeed * 0.001;
+				c.t += 0.08 + playerScrollSpeed * 0.0005;
 			} else {
-				c.t += (c.speed - playerScrollSpeed) * 0.001;
+				c.t -= (playerScrollSpeed - Math.abs(c.speed)) * 0.001;
 			}
 
 			if (c.t > 1.35 || c.t < -0.1) {
