@@ -21,77 +21,74 @@ class MenuScene extends Phaser.Scene {
             this._drawCar();
             this._drawTitle();
             this._drawButtons();
-            this._drawButtons();
             this._drawFooter();
     }
 
 
     /* Background */
     _drawBackground() {
-        const gfx = this.add.graphics();
+	const gfx = this.add.graphics();
 
-        /* Sky */
-        const strips = 40;
-        const stripH = (this.H * 0.55) / strips;
-        for (let i = 0; i < strips; i++) {
-            const t = i / strips;
-            const r = Phaser.Math.Interpolation.Linear([C.DAY.SKY_TOP, C.DAY.SKY_BOTTOM], t);
-            const g = Phaser.Math.Interpolation.Linear([C.DAY.SKY_TOP, C.DAY.SKY_BOTTOM], t, 'Sine.easeInOut');
-            const b = Phaser.Math.Interpolation.Linear([C.DAY.SKY_TOP, C.DAY.SKY_BOTTOM], t, 'Sine.easeInOut');
-            const color = (Math.round(r) << 16) + (Math.round(g) << 8) + Math.round(b);
-            gfx.fillStyle(color, 1);
-            gfx.fillRect(0, i * stripH, this.W, stripH);
-        }
+	/* Sky */
+	gfx.fillStyle(0x05060f, 1);
+	gfx.fillRect(0, 0, this.W, this.H * 0.55);
+	gfx.fillStyle(0x1a0a2a, 1);
+	gfx.fillRect(0, this.H * 0.38, this.W, this.H * 0.17);
 
-        /* Ground Strip */
-        gfx.fillStyle(C.DAY.GRASS, 1);
-        gfx.fillRect(0, this.H * 0.55, this.W, this.H * 0.45);
+	/* Ground */
+	gfx.fillStyle(0x0a0c18, 1);
+	gfx.fillRect(0, this.H * 0.55, this.W, this.H * 0.45);
 
-        /* Road Perspective */
-        gfx.fillStyle(C.DAY.ROAD, 1);
-        gfx.fillTriangle(
-            this.W / 2 - 60, this.H * 0.55,
-            this.W / 2 + 60, this.H * 0.55,
-            this.W / 2, this.H,
-        );
-        gfx.fillTriangle(
-            this.W / 2 - 60, this.H * 0.55,
-            this.W / 2 + 60, this.H * 0.55,
-            0, this.H,
-        );
+	/* Road */
+    gfx.fillStyle(0x1e2035, 1);
+    gfx.fillPoints([
+	    { x: this.W / 2 - 55, y: this.H * 0.55 },
+	    { x: this.W / 2 + 55, y: this.H * 0.55 },
+        { x: this.W, y: this.H },
+        { x: 0, y: this.H },
+    ], true);
 
-        /* Stars */
-        for (let i = 0; i < 80; i++) {
-            const x = Phaser.Math.Between(0, this.W);
-            const y = Phaser.Math.Between(0, this.H * 0.55);
-            const size = Math.random() < 0.2 ? 2 : 1;
-            const alpha = Phaser.Math.FloatBetween(0.3, 1.0);
-            gfx.fillStyle(0xffffff, alpha);
-            gfx.fillCircle(x, y, size);
-        }
+    /* Center line */
+    gfx.fillStyle(C.NIGHT.LANE_CENTER, 0.4);
+    gfx.fillPoints([
+	    { x: this.W / 2 - 3, y: this.H * 0.55 },
+        { x: this.W / 2 + 3, y: this.H * 0.55 },
+        { x: this.W / 2 + 18, y: this.H },
+        { x: this.W / 2 - 18, y: this.H },
+    ], true);
 
-        /* Ground glow */
-		gfx.fillStyle(C.NIGHT.NEON_CYAN, 0.04);
-		gfx.fillRect(0, this.H * 0.55, this.W, this.H * 0.45);
+	/* Stars */
+	for (let i = 0; i < 80; i++) {
+		const x = Phaser.Math.Between(0, this.W);
+		const y = Phaser.Math.Between(0, this.H * 0.5);
+		const size = Math.random() < 0.2 ? 2 : 1;
+		const alpha = Phaser.Math.FloatBetween(0.3, 1.0);
+		gfx.fillStyle(0xffffff, alpha);
+		gfx.fillRect(x, y, size, size);
+	}
 
-		/* City Silhouette */
-		this._drawSkyline(gfx);
-    }
+	/* Horizon */
+	gfx.fillStyle(C.NIGHT.NEON_PINK, 0.07);
+	gfx.fillRect(0, this.H * 0.52, this.W, 6);
+	gfx.fillStyle(C.NIGHT.NEON_CYAN, 0.05);
+	gfx.fillRect(0, this.H * 0.54, this.W, 4);
 
+	this._drawSkyline(gfx);
+}
 
     /* City Skyline */
     _drawSkyline(gfx) {
         const buidlings = [
-            { x: 0,   w: 60,  h: 120 },
-			{ x: 55,  w: 45,  h: 80  },
-			{ x: 95,  w: 70,  h: 160 },
-			{ x: 160, w: 40,  h: 100 },
-			{ x: 195, w: 55,  h: 70  },
-			{ x: 620, w: 55,  h: 70  },
-			{ x: 670, w: 40,  h: 100 },
-			{ x: 705, w: 70,  h: 160 },
-			{ x: 700, w: 45,  h: 80  },
-			{ x: 740, w: 60,  h: 120 },
+            { x: 0,w: 60, h: 120 },
+			{ x: 55, w: 45, h: 80  },
+			{ x: 95, w: 70, h: 160 },
+			{ x: 160, w: 40, h: 100 },
+			{ x: 195, w: 55, h: 70  },
+			{ x: 620, w: 55, h: 70  },
+			{ x: 670, w: 40, h: 100 },
+			{ x: 705, w: 70, h: 160 },
+			{ x: 700, w: 45, h: 80  },
+			{ x: 740, w: 60, h: 120 },
         ];
 
         const baseY = this.H * 0.55;
@@ -133,8 +130,8 @@ class MenuScene extends Phaser.Scene {
         const gfx = this.add.graphics();
         const P = C.PX;
 
-        const ox = this.W / 2; - 30 * P / 2;
-        const oy = this.H * 0.68;
+        const ox = this.W / 2 - 15 * P;
+        const oy = this.H - 210;
 
         const px = (col, row, w, h, color, alpha = 1) => {
             gfx.fillStyle(color, alpha);
@@ -190,11 +187,6 @@ class MenuScene extends Phaser.Scene {
             color: C.UI.TEXT_SCORE,
         }).setOrigin(0.5);
 
-        this.add.text(this.W / 2, 100, '※  SELECT YOUR ROUTE  ※', {
-			fontFamily: C.UI.FONT,
-			fontSize: '14px',
-			color: C.UI.TEXT_DIM,
-		}).setOrigin(0.5);
     }
 
 
@@ -202,10 +194,10 @@ class MenuScene extends Phaser.Scene {
     _drawButtons() {
         this._makeButton(
             this.W / 2 - 130,
-            this.H - 155,
+            this.H - 90,
             220,
             64,
-            '☀  DAY',
+            'DAY',
 			'Mt. Fuji Backroads',
 			C.DAY.SKY_TOP,
 			'DayScene'
@@ -213,10 +205,10 @@ class MenuScene extends Phaser.Scene {
         
         this._makeButton(
 			this.W / 2 + 130,
-			this.H - 155,
+			this.H - 90,
 			220,
 			64,
-			'☽  NIGHT',
+			'NIGHT',
 			'Tokyo City Traffic',
 			C.NIGHT.NEON_CYAN,
 			'NightScene'
@@ -279,10 +271,13 @@ class MenuScene extends Phaser.Scene {
 
     /* Footer */
     _drawFooter() {
-        this.add.text(this.W / 2, this.H - 18, 'WASD or ARROW KEYS to drive', {
+        this.add.rectangle(this.W / 2, this.H - 14, 320, 22, 0x000000, 0.6)
+            .setDepth(10);
+
+        this.add.text(this.W / 2, this.H - 14, 'WASD or ARROW KEYS to drive', {
             fontFamily: C.UI.FONT,
-            fontSize: '12px',
-            color: C.UI.TEXT_DIM,
-        }).setOrigin(0.5);
+            fontSize:   '12px',
+            color:      '#aaaaaa',
+        }).setOrigin(0.5).setDepth(11);
     }
 }

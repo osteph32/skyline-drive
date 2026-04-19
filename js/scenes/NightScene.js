@@ -22,20 +22,22 @@ class NightScene extends Phaser.Scene {
         /* Scene Objects */
 		this.bg = new NightBackground(this);
 		this.road = new Road(this, C.NIGHT);
+		this.road.gfx.setDepth(3);
 		this.player = new PlayerCar(this);
 		this.traffic = new TrafficCar(this, this.road);
 
 		/* Traffic Spawn Timer */
 		this.spawnTimer = this.time.addEvent({
 			delay: C.TRAFFIC_SPAWN_INTERVAL,
-			callback: this._spawnTraffic,
+			callback: () => { if (this.traffic) this._spawnTraffic(); },
 			callbackScope: this,
 			loop: true,
 		});
 
-		this.time.delayedCall(400, () => this.traffic.spawn());
-		this.time.delayedCall(900, () => this.traffic.spawn());
-		this.time.delayedCall(1400, () => this.traffic.spawn());
+		this.time.delayedCall(200,  () => { if (this.traffic) this.traffic.spawn(); });
+		this.time.delayedCall(600,  () => { if (this.traffic) this.traffic.spawn(); });
+		this.time.delayedCall(1000, () => { if (this.traffic) this.traffic.spawn(); });
+		this.time.delayedCall(1400, () => { if (this.traffic) this.traffic.spawn(); });
 
 		this._buildHUD();
 		this._buildBackButton();
@@ -87,19 +89,13 @@ class NightScene extends Phaser.Scene {
 			}
 		).setOrigin(0.5).setDepth(10).setAlpha(0);
 
-		/* Night label */
-		this.add.text(18, 18, '☽  TOKYO CITY', {
-			fontFamily: C.UI.FONT,
-			fontSize: '12px',
-			color: C.UI.TEXT_DIM,
-		}).setDepth(10);
 	}
 
 	/* Back Button */
 	_buildBackButton() {
 		const gfx = this.add.graphics().setDepth(10);
 		const bx = 38;
-		const by = C.HEIGHT - 30;
+		const by = 26;
 		const bw = 70;
 		const bh = 22;
 

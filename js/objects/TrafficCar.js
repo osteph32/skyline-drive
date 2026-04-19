@@ -29,6 +29,7 @@ class TrafficCar {
 
     /* Spawn a New Car */
     spawn() {
+		console.log('spawn called, cars before:', this.cars.length);
         const isOncoming = Math.random() < 0.45;
         const lane = isOncoming
             ? Phaser.Math.Between(0, 1) /* Left 2 Lanes */
@@ -49,31 +50,35 @@ class TrafficCar {
             palette,
             hit: false
         });
+		console.log('cars after spawn:', this.cars.length, this.cars);
     }
 
 
     /* Call Every Frame */
     update(playerScrollSpeed, playerX, playerY) {
-        this.gfx.clear();
+		if (!Array.isArray(this.cars)) this.cars = [];
+		console.log('update: car count:', this.cars.length);
+		this.gfx.clear();
 
-        for (let i = this.car.length - 1; i >= 0; i--) {
-            const c = this.car[i];
-            if (car.isOncoming) {
-                car.t += 0.012 + playerScrollSpeed * 0.001;
-            } else {
-                car.t += (car.speed - playerScrollSpeed) * 0.001;
-            }
+		for (let i = this.cars.length - 1; i >= 0; i--) {
+			const c = this.cars[i];
 
-            if (car.t > 1.3 || car.t < -0.05) {
-                this.car.splice(i, 1);
-                continue;
-            }
+			if (c.isOncoming) {
+				c.t += 0.012 + playerScrollSpeed * 0.001;
+			} else {
+				c.t += (c.speed - playerScrollSpeed) * 0.001;
+			}
 
-            this._drawCar(car);
-        }
-        
-        return this._checkCollisions(playerX, playerY);
-    }
+			if (c.t > 1.3 || c.t < -0.05) {
+				this.cars.splice(i, 1);
+				continue;
+			}
+
+			this._drawCar(c);
+		}
+
+	return this._checkCollision(playerX, playerY);
+}
 
 
     /* Draw One Traffic Car */
@@ -174,34 +179,35 @@ class TrafficCar {
 
 	/* Collision Detection */
 	_checkCollision(playerX, playerY) {
-		const pW = 28 * C.PX;
-		const pH = 16 * C.PX;
-		const pL = playerX - pW / 2;
-		const pR = playerX + pW / 2;
-		const pT = playerY - pH;
-		const pB = playerY + pH * 0.5;
+	if (!Array.isArray(this.cars) || this.cars.length === 0) return false;
 
-		const shrink = C.PX * 3;
+	const pW = 28 * C.PX;
+	const pH = 16 * C.PX;
+	const pL = playerX - pW / 2;
+	const pR = playerX + pW / 2;
+	const pT = playerY - pH;
+	const pB = playerY + pH * 0.5;
 
-		for (const car of this.cars) {
-			if (!car.screenW) continue;
-			if (car.hit)      continue;
+	const shrink = C.PX * 3;
 
-			const cL = car.screenX + shrink;
-			const cR = car.screenX + car.screenW - shrink;
-			const cT = car.screenY + shrink;
-			const cB = car.screenY + car.screenH - shrink;
+	for (const car of this.cars) {
+		if (!car.screenW) continue;
+		if (car.hit)      continue;
+		if (car.t < 0.75) continue;
 
-			if (car.t < 0.75) continue;
+		const cL = car.screenX + shrink;
+		const cR = car.screenX + car.screenW - shrink;
+		const cT = car.screenY + shrink;
+		const cB = car.screenY + car.screenH - shrink;
 
-			if (pL < cR && pR > cL && pT < cB && pB > cT) {
-				car.hit = true;
-				return true;
-			}
+		if (pL < cR && pR > cL && pT < cB && pB > cT) {
+			car.hit = true;
+			return true;
 		}
-
-		return false;
 	}
+
+	return false;
+}
 
 	/* Clear All Cars */
 	reset() {

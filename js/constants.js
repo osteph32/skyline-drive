@@ -18,14 +18,14 @@ const C = {
     PLAYER_START_LANE: 1,
     PLAYER_Y: 300,
     PLAYER_SPEED: 4,
-    PLAYER_MAX_X: 680,
-    PLAYER_MIN_X: 120,
+    PLAYER_MAX_X: 530,
+    PLAYER_MIN_X: 270,
 
     /* Scroll */
-    BASE_SCROLL_SPEED: 8,
-    MAX_SCROLL_SPEED: 20,
-    ACCEL_RATE: 0.3,
-    DECEL_RATE: 0.5,
+    BASE_SCROLL_SPEED: 5,
+    MAX_SCROLL_SPEED: 12,
+    ACCEL_RATE: 0.08,
+    DECEL_RATE: 0.2,
 
     /* Traffic (night only) */
     TRAFFIC_SPAWN_INTERVAL: 1800,

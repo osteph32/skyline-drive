@@ -19,6 +19,7 @@ class DayScene extends Phaser.Scene {
 
 		this.bg = new DayBackground(this);
 		this.road = new Road(this, C.DAY);
+		this.road.gfx.setDepth(3);
 		this.player = new PlayerCar(this);
 
 		this._buildHUD();
@@ -50,18 +51,13 @@ class DayScene extends Phaser.Scene {
 			{ ...style, fontSize: '13px', color: C.UI.TEXT_DIM }
 		).setOrigin(1, 0).setDepth(10);
 
-		this.add.text(18, 18, '☀  MT. FUJI BACKROADS', {
-			fontFamily: C.UI.FONT,
-			fontSize: '12px',
-			color: C.UI.TEXT_DIM,
-		}).setDepth(10);
 	}
 
 	/* Back Button */
 	_buildBackButton() {
 		const gfx = this.add.graphics().setDepth(10);
 		const bx = 38;
-		const by = C.HEIGHT - 30;
+		const by = 26;
 		const bw = 70;
 		const bh = 22;
 

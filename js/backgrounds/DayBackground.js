@@ -171,13 +171,13 @@ class DayBackground {
 	/* Clouds */
 	_generateClouds() {
 		const clouds = [];
-		for (let i = 0; i < 5; i++) {
+		for (let i = 0; i < 8; i++) {
 			clouds.push({
-				x: Phaser.Math.Between(0, C.WIDTH),
-				y: Phaser.Math.Between(18, C.HORIZON_Y * 0.55),
+				x: (C.WIDTH / 8) * i + Phaser.Math.Between(0, 80),
+				y: Phaser.Math.Between(18, C.HORIZON_Y * 0.5),
 				w: Phaser.Math.Between(60, 130),
 				h: Phaser.Math.Between(14, 28),
-				speed: Phaser.Math.FloatBetween(0.08, 0.22),
+				speed: Phaser.Math.FloatBetween(0.3, 0.7),
 			});
 		}
 		return clouds;
@@ -197,29 +197,34 @@ class DayBackground {
 
 	/* Cherry Blossom Tress */
 	_drawTrees() {
-		const gfx = this.gfxTrees;
+	const gfx = this.gfxTrees;
+	const gap  = 95;
+	const count = 5;
 
-		/* Left Trees */
-		const leftPositions = [0, 95, 190, 285, 380];
-		leftPositions.forEach(baseX => {
-			const x = 30 + ((baseX - this.treeOffsetL + 420) % 420);
-			this._drawTree(gfx, x, C.HORIZON_Y + 14, 0.9);
-		});
-
-		/* Right Trees */
-		const rightPositions = [0, 95, 190, 285, 380];
-		rightPositions.forEach(baseX => {
-			const x = C.WIDTH - 30 - ((baseX - this.treeOffsetR + 420) % 420);
-			this._drawTree(gfx, x, C.HORIZON_Y + 14, 0.9);
-		});
-
-        /* Smaller Trees in Distance */
-		for (let i = 0; i < 8; i++) {
-			const x = ((i * 110 + this.treeOffsetL * 0.3) % C.WIDTH);
-			if (x > 180 && x < C.WIDTH - 180) continue; /* gap in center for road */
-			this._drawTree(gfx, x, C.HORIZON_Y + 4, 0.45);
-		}
+	/* Left side */
+	for (let i = 0; i < count; i++) {
+		const base = (i * gap - this.treeOffsetL % (gap * count) + gap * count) % (gap * count);
+		const x    = 30 + base;
+		if (x < 0 || x > C.WIDTH * 0.42) continue;
+		this._drawTree(gfx, x, C.HORIZON_Y + 14, 0.9);
 	}
+
+	/* Right side */
+	for (let i = 0; i < count; i++) {
+		const base = (i * gap - this.treeOffsetR % (gap * count) + gap * count) % (gap * count);
+		const x    = C.WIDTH - 30 - base;
+		if (x > C.WIDTH || x < C.WIDTH * 0.58) continue;
+		this._drawTree(gfx, x, C.HORIZON_Y + 14, 0.9);
+	}
+
+	/* Small Trees in Distance */
+	for (let i = 0; i < 10; i++) {
+		const base = (i * 80 - this.treeOffsetL * 0.25 % 800 + 800) % 800;
+		const x    = base;
+		if (x > 160 && x < C.WIDTH - 160) continue;
+		this._drawTree(gfx, x, C.HORIZON_Y + 4, 0.4);
+	}
+}
 
 	_drawTree(gfx, x, baseY, scale) {
 		const P = C.PX * scale;

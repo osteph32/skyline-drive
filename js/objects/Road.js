@@ -102,45 +102,40 @@ class Road {
     
     /* WhiteLane Dashes */
     _drawLaneDashes() {
-        const gfx = this.gfx;
-        const dashes = 16;
-        
-        const laneOffsets = [
-            -0.5,
-            0.5,
-        ];
+	const gfx    = this.gfx;
+	const dashes = 16;
+	const laneOffsets = [-0.5, 0.5];
 
-        laneOffsets.forEach(offset => {
-            for (let i = 0; i < dashes; i++) {
-                const t1 = i / dashes;
-                const t2 = (i + 0.35) / dashes;
+	for (let l = 0; l < laneOffsets.length; l++) {
+		const offset = laneOffsets[l];
 
-                const scrollT = (this.offset / 80) / dashes;
-                const st1 = (t1 + scrollT) % 1;
-                const st2 = (t2 + scrollT) % 1;
-                
-                if (st1 > st2) continue;
-                
-                const y1 = this._perspY(st1);
-                const y2 = this._perspY(st2);
-                const cx1 = this._perspXCenter(st1)
-                const cx2 = this._perspXCenter(st2)
-                const hw1 = this._perspW(st1, 2);
-                const hw2 = this._perspW(st2, 2);
+		for (let i = 0; i < dashes; i++) {
+			const t1 = i / dashes;
+			const t2 = (i + 0.35) / dashes;
+			const scrollT = (this.offset / 80) / dashes;
+			const st1 = (t1 + scrollT) % 1;
+			const st2 = (t2 + scrollT) % 1;
 
-                const off1 = this._perspW(st1, C.ROAD_TOP_W * 0.22) * laneOff * 2;
-                const off2 = this._perspW(st2, C.ROAD_TOP_W * 0.22) * laneOff * 2;
+			if (st1 > st2) continue;
+			const y1  = this._perspY(st1);
+			const y2  = this._perspY(st2);
+			const cx1 = this._perspXCenter(st1);
+			const cx2 = this._perspXCenter(st2);
+			const hw1 = this._perspW(st1, 2);
+			const hw2 = this._perspW(st2, 2);
+			const off1 = this._perspW(st1, C.ROAD_TOP_W * 0.22) * offset * 2;
+			const off2 = this._perspW(st2, C.ROAD_TOP_W * 0.22) * offset * 2;
 
-                gfx.fillStyle(this.palette.LANE_DASH, 0.85);
-                gfx.fillPoints([
-                    { x: cx1 + off1 - hw1, y: y1 },
-                    { x: cx1 + off1 + hw1, y: y1 },
-                    { x: cx2 + off2 + hw2, y: y2 },
-                    { x: cx2 + off2 - hw2, y: y2 },
-                ], true);
-            }
-        });
-    }
+			gfx.fillStyle(this.palette.LANE_DASH, 0.85);
+			gfx.fillPoints([
+				{ x: cx1 - hw1 + off1, y: y1 },
+				{ x: cx1 + hw1 + off1, y: y1 },
+				{ x: cx2 + hw2 + off2, y: y2 },
+				{ x: cx2 - hw2 + off2, y: y2 },
+			], true);
+		}
+	}
+}
 
     /* Road Edges */
     _drawRoadEdges() {
@@ -163,7 +158,7 @@ class Road {
             const col = i % 2 === 0 ? 0xcc2200 : 0xffffff;
 			gfx.fillStyle(col, 1);
 
-			/* Left edge */
+			/* Left Edge */
 			gfx.fillPoints([
 				{ x: lx1 - eW1, y: y1 },
 				{ x: lx1, y: y1 },
@@ -171,7 +166,7 @@ class Road {
 				{ x: lx2 - eW2, y: y2 },
 			], true);
 
-			/* Right edge */
+			/* Right Edge */
 			gfx.fillPoints([
 				{ x: rx1,       y: y1 },
 				{ x: rx1 + eW1, y: y1 },
@@ -195,7 +190,7 @@ class Road {
 		return topHalf + (bottomHalf - topHalf) * t;
 	}
 
-    /* Center X of road (straight ahead) */
+    /* Center X of Road */
 	_perspXCenter(t) {
 		return C.WIDTH / 2;
 	}
@@ -208,7 +203,6 @@ class Road {
 		return C.WIDTH / 2 + this._perspHalfW(t);
 	}
 
-	/* Scale a world width w by perspective at depth t */
 	_perspW(t, w) {
 		const scale = this._perspHalfW(t) / (C.ROAD_BOTTOM_W / 2);
 		return w * scale;
